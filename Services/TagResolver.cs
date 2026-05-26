@@ -36,14 +36,14 @@ namespace RevitSheetExporter.Services
             var result = template
                 .Replace("{RevitFileDir}", GetRevitFileDir())
                 .Replace("{ProjectNumber}", Sanitize(projectInfo?.Number ?? "UnknownProject"))
-                .Replace("{ProjectName}",  Sanitize(projectInfo?.Name   ?? "UnknownName"))
-                .Replace("{Date}",         DateTime.Now.ToString(_dateFormat));
+                .Replace("{ProjectName}", Sanitize(projectInfo?.Name ?? "UnknownName"))
+                .Replace("{Date}", DateTime.Now.ToString(_dateFormat));
 
             if (sheet != null)
             {
                 result = result
                     .Replace("{SheetNumber}", Sanitize(sheet.SheetNumber))
-                    .Replace("{SheetName}",   Sanitize(sheet.Name));
+                    .Replace("{SheetName}", Sanitize(sheet.Name));
             }
 
             return result;
@@ -56,12 +56,12 @@ namespace RevitSheetExporter.Services
         public static string Preview(string template, string dateFormat)
         {
             return template
-                .Replace("{RevitFileDir}",  @"C:\Projects\MyProject")
+                .Replace("{RevitFileDir}", @"C:\Projects\MyProject")
                 .Replace("{ProjectNumber}", "367")
-                .Replace("{ProjectName}",   "Cornish House")
-                .Replace("{Date}",          DateTime.Now.ToString(dateFormat))
-                .Replace("{SheetNumber}",   "A1.01")
-                .Replace("{SheetName}",     "Site Plan");
+                .Replace("{ProjectName}", "Cornish House")
+                .Replace("{Date}", DateTime.Now.ToString(dateFormat))
+                .Replace("{SheetNumber}", "A1.01")
+                .Replace("{SheetName}", "Site Plan");
         }
 
         private string GetRevitFileDir()

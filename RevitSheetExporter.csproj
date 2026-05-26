@@ -1,7 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0-windows</TargetFramework>
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <PlatformTarget>x64</PlatformTarget>
@@ -10,8 +9,16 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <Configurations>Debug;Release;Debug2027;Release2027</Configurations>
-    <!-- Revit 2027 API was compiled against .NET 10; suppress assembly version mismatch -->
-    <NoWarn>CS1705</NoWarn>
+  </PropertyGroup>
+
+  <!-- Revit 2026 targets .NET 8 -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
+    <TargetFramework>net8.0-windows</TargetFramework>
+  </PropertyGroup>
+
+  <!-- Revit 2027 API was compiled against .NET 10; match that version -->
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug2027' Or '$(Configuration)' == 'Release2027'">
+    <TargetFramework>net10.0-windows</TargetFramework>
   </PropertyGroup>
 
   <!-- Revit 2026 references (default) -->

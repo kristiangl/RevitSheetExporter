@@ -86,31 +86,31 @@ namespace RevitSheetExporter.Services
         {
             var opt = new PDFExportOptions
             {
-                Combine                      = _settings.Pdf.CombineToSingleFile,
-                ViewLinksInBlue              = _settings.Pdf.ViewLinksInBlue,
-                HideReferencePlane           = _settings.Pdf.HideRefWorkPlanes,
-                HideUnreferencedViewTags     = _settings.Pdf.HideUnreferencedViewTags,
-                HideScopeBoxes               = _settings.Pdf.HideScopeBoxes,
-                HideCropBoundaries           = _settings.Pdf.HideCropBoundaries,
+                Combine = _settings.Pdf.CombineToSingleFile,
+                ViewLinksInBlue = _settings.Pdf.ViewLinksInBlue,
+                HideReferencePlane = _settings.Pdf.HideRefWorkPlanes,
+                HideUnreferencedViewTags = _settings.Pdf.HideUnreferencedViewTags,
+                HideScopeBoxes = _settings.Pdf.HideScopeBoxes,
+                HideCropBoundaries = _settings.Pdf.HideCropBoundaries,
                 ReplaceHalftoneWithThinLines = _settings.Pdf.ReplaceHalftoneWithThinLines,
-                ZoomType                     = _settings.Pdf.ZoomType == "FitToPage"
+                ZoomType = _settings.Pdf.ZoomType == "FitToPage"
                                                    ? ZoomType.FitToPage
                                                    : ZoomType.Zoom,
-                ZoomPercentage               = _settings.Pdf.ZoomPercentage,
+                ZoomPercentage = _settings.Pdf.ZoomPercentage,
             };
 
             opt.RasterQuality = _settings.Pdf.RasterQuality switch
             {
-                "Low"          => RasterQualityType.Low,
-                "Medium"       => RasterQualityType.Medium,
+                "Low" => RasterQualityType.Low,
+                "Medium" => RasterQualityType.Medium,
                 "Presentation" => RasterQualityType.Presentation,
-                _              => RasterQualityType.High
+                _ => RasterQualityType.High
             };
 
             opt.ColorDepth = _settings.Pdf.ColorDepth switch
             {
                 "GrayScale" => ColorDepthType.GrayScale,
-                _           => ColorDepthType.Color
+                _ => ColorDepthType.Color
             };
 
             return opt;
@@ -139,7 +139,7 @@ namespace RevitSheetExporter.Services
             {
                 "2013" => ACADVersion.R2013,
                 "2010" => ACADVersion.R2010,
-                _      => ACADVersion.R2018   // default and handles 2018, 2004, 2000 fallback
+                _ => ACADVersion.R2018   // default and handles 2018, 2004, 2000 fallback
             };
 
             // R2007 needs its own case
@@ -148,12 +148,12 @@ namespace RevitSheetExporter.Services
 
             var opt = new DWGExportOptions
             {
-                FileVersion    = fileVersion,
+                FileVersion = fileVersion,
                 ExportingAreas = _settings.Dwg.ExportRooms,
-                SharedCoords   = _settings.Dwg.CoordinateSystem == "SharedSite",
+                SharedCoords = _settings.Dwg.CoordinateSystem == "SharedSite",
                 // MergedViews=true embeds views into the sheet DWG (no xrefs).
                 // MergedViews=false creates separate xref DWGs for each view on the sheet.
-                MergedViews    = !_settings.Dwg.ViewsOnSheetsAsExternalRefs,
+                MergedViews = !_settings.Dwg.ViewsOnSheetsAsExternalRefs,
             };
 
             // HideUnreferenceViewTags — note the Revit API spelling (missing 'd')

@@ -2,7 +2,6 @@ using Autodesk.Revit.DB;
 using RevitSheetExporter.Models;
 using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
 // Disambiguate WPF/WinForms/Revit types
 using CheckBox = System.Windows.Controls.CheckBox;
 using MessageBox = System.Windows.MessageBox;
@@ -56,11 +55,11 @@ namespace RevitSheetExporter.UI
 
                 _allItems.Add(new SheetItem
                 {
-                    SheetNumber   = sheet.SheetNumber,
-                    SheetName     = sheet.Name,
+                    SheetNumber = sheet.SheetNumber,
+                    SheetName = sheet.Name,
                     IsInSheetList = inSheetList,
-                    ElementId     = sheet.Id,
-                    IsSelected    = false
+                    ElementId = sheet.Id,
+                    IsSelected = false
                 });
             }
         }
@@ -78,11 +77,11 @@ namespace RevitSheetExporter.UI
             {
                 _allItems.Add(new SheetItem
                 {
-                    SheetNumber   = view.ViewType.ToString(),
-                    SheetName     = view.Name,
+                    SheetNumber = view.ViewType.ToString(),
+                    SheetName = view.Name,
                     IsInSheetList = true,
-                    ElementId     = view.Id,
-                    IsSelected    = false
+                    ElementId = view.Id,
+                    IsSelected = false
                 });
             }
         }

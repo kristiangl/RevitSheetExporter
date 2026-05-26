@@ -27,7 +27,7 @@ namespace RevitSheetExporter
                 ToolTip = "Bulk export sheets to PDF, DWG, and/or IFC",
                 LongDescription = "Select sheets from the project sheet list, then configure export formats and locations.",
                 LargeImage = LoadIcon("Resources/icon32.png"),
-                Image      = LoadIcon("Resources/icon32.png")   // 16×16 slot — Revit scales it down
+                Image = LoadIcon("Resources/icon32.png")   // 16×16 slot — Revit scales it down
             };
 
             panel.AddItem(buttonData);

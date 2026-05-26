@@ -1,9 +1,7 @@
 using Autodesk.Revit.DB;
 using RevitSheetExporter.Models;
 using RevitSheetExporter.Services;
-using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 // Disambiguate WPF/WinForms/Revit types (all three present due to UseWindowsForms)
 using ComboBox = System.Windows.Controls.ComboBox;
 using ComboBoxItem = System.Windows.Controls.ComboBoxItem;
@@ -47,34 +45,34 @@ namespace RevitSheetExporter.UI
             RdoPdfSeparate.IsChecked = !s.Pdf.CombineToSingleFile;
             SelectComboByTag(CmbPdfPaperSize, s.Pdf.PaperSize);
             RdoLandscape.IsChecked = s.Pdf.Orientation == "Landscape";
-            RdoPortrait.IsChecked  = s.Pdf.Orientation == "Portrait";
-            RdoZoom.IsChecked      = s.Pdf.ZoomType == "Zoom";
+            RdoPortrait.IsChecked = s.Pdf.Orientation == "Portrait";
+            RdoZoom.IsChecked = s.Pdf.ZoomType == "Zoom";
             RdoFitToPage.IsChecked = s.Pdf.ZoomType == "FitToPage";
-            TxtZoomPct.Text        = s.Pdf.ZoomPercentage.ToString();
-            RdoVector.IsChecked    = s.Pdf.HiddenLineViews == "VectorProcessing";
-            RdoRaster.IsChecked    = s.Pdf.HiddenLineViews == "RasterProcessing";
-            ChkViewLinksBlue.IsChecked   = s.Pdf.ViewLinksInBlue;
-            ChkHideRefPlanes.IsChecked   = s.Pdf.HideRefWorkPlanes;
-            ChkHideUnrefTags.IsChecked   = s.Pdf.HideUnreferencedViewTags;
-            ChkHideScopeBoxes.IsChecked  = s.Pdf.HideScopeBoxes;
-            ChkHideCropBounds.IsChecked  = s.Pdf.HideCropBoundaries;
+            TxtZoomPct.Text = s.Pdf.ZoomPercentage.ToString();
+            RdoVector.IsChecked = s.Pdf.HiddenLineViews == "VectorProcessing";
+            RdoRaster.IsChecked = s.Pdf.HiddenLineViews == "RasterProcessing";
+            ChkViewLinksBlue.IsChecked = s.Pdf.ViewLinksInBlue;
+            ChkHideRefPlanes.IsChecked = s.Pdf.HideRefWorkPlanes;
+            ChkHideUnrefTags.IsChecked = s.Pdf.HideUnreferencedViewTags;
+            ChkHideScopeBoxes.IsChecked = s.Pdf.HideScopeBoxes;
+            ChkHideCropBounds.IsChecked = s.Pdf.HideCropBoundaries;
             ChkReplaceHalftone.IsChecked = s.Pdf.ReplaceHalftoneWithThinLines;
             SelectComboByContent(CmbRasterQuality, s.Pdf.RasterQuality);
-            SelectComboByContent(CmbColorDepth,    s.Pdf.ColorDepth);
+            SelectComboByContent(CmbColorDepth, s.Pdf.ColorDepth);
 
             // DWG
             TxtDwgFilename.Text = s.Dwg.FilenameTemplate;
-            SelectComboByTag(CmbLayerMapping,  s.Dwg.LayerMapping);
-            SelectComboByTag(CmbDwgVersion,    s.Dwg.FileVersion);
+            SelectComboByTag(CmbLayerMapping, s.Dwg.LayerMapping);
+            SelectComboByTag(CmbDwgVersion, s.Dwg.FileVersion);
             SelectComboByTag(CmbTextTreatment, s.Dwg.TextTreatment);
-            SelectComboByTag(CmbExportColors,  s.Dwg.ExportColors);
-            SelectComboByTag(CmbExportSolids,  s.Dwg.ExportSolids);
-            SelectComboByTag(CmbUnits,         s.Dwg.Units);
-            SelectComboByTag(CmbCoordinates,   s.Dwg.CoordinateSystem);
-            ChkDwgExternalRefs.IsChecked  = s.Dwg.ViewsOnSheetsAsExternalRefs;
+            SelectComboByTag(CmbExportColors, s.Dwg.ExportColors);
+            SelectComboByTag(CmbExportSolids, s.Dwg.ExportSolids);
+            SelectComboByTag(CmbUnits, s.Dwg.Units);
+            SelectComboByTag(CmbCoordinates, s.Dwg.CoordinateSystem);
+            ChkDwgExternalRefs.IsChecked = s.Dwg.ViewsOnSheetsAsExternalRefs;
             ChkDwgHideScopeBoxes.IsChecked = s.Dwg.HideScopeBoxes;
-            ChkDwgHideRefPlanes.IsChecked  = s.Dwg.HideRefPlanes;
-            ChkDwgHideUnrefTags.IsChecked  = s.Dwg.HideUnreferencedViewTags;
+            ChkDwgHideRefPlanes.IsChecked = s.Dwg.HideRefPlanes;
+            ChkDwgHideUnrefTags.IsChecked = s.Dwg.HideUnreferencedViewTags;
 
             // IFC
             TxtIfcFilename.Text = s.Ifc.FilenameTemplate;
@@ -89,46 +87,46 @@ namespace RevitSheetExporter.UI
             var s = new ExportSettings
             {
                 FolderTemplate = TxtFolderTemplate.Text,
-                DateFormat     = GetComboTag(CmbDateFormat) ?? "yyMMdd",
-                ExportPdf      = ChkPdf.IsChecked == true,
-                ExportDwg      = ChkDwg.IsChecked == true,
-                ExportIfc      = ChkIfc.IsChecked == true,
+                DateFormat = GetComboTag(CmbDateFormat) ?? "yyMMdd",
+                ExportPdf = ChkPdf.IsChecked == true,
+                ExportDwg = ChkDwg.IsChecked == true,
+                ExportIfc = ChkIfc.IsChecked == true,
 
                 Pdf = new PdfSettings
                 {
-                    FilenameTemplate         = TxtPdfFilename.Text,
-                    CombineToSingleFile      = RdoPdfCombined.IsChecked == true,
-                    PaperSize                = GetComboTag(CmbPdfPaperSize) ?? "Default",
-                    Orientation              = RdoLandscape.IsChecked == true ? "Landscape" : "Portrait",
-                    ZoomType                 = RdoFitToPage.IsChecked == true ? "FitToPage" : "Zoom",
-                    ZoomPercentage           = int.TryParse(TxtZoomPct.Text, out var pct) ? pct : 100,
-                    HiddenLineViews          = RdoVector.IsChecked == true ? "VectorProcessing" : "RasterProcessing",
-                    ViewLinksInBlue          = ChkViewLinksBlue.IsChecked == true,
-                    HideRefWorkPlanes        = ChkHideRefPlanes.IsChecked == true,
+                    FilenameTemplate = TxtPdfFilename.Text,
+                    CombineToSingleFile = RdoPdfCombined.IsChecked == true,
+                    PaperSize = GetComboTag(CmbPdfPaperSize) ?? "Default",
+                    Orientation = RdoLandscape.IsChecked == true ? "Landscape" : "Portrait",
+                    ZoomType = RdoFitToPage.IsChecked == true ? "FitToPage" : "Zoom",
+                    ZoomPercentage = int.TryParse(TxtZoomPct.Text, out var pct) ? pct : 100,
+                    HiddenLineViews = RdoVector.IsChecked == true ? "VectorProcessing" : "RasterProcessing",
+                    ViewLinksInBlue = ChkViewLinksBlue.IsChecked == true,
+                    HideRefWorkPlanes = ChkHideRefPlanes.IsChecked == true,
                     HideUnreferencedViewTags = ChkHideUnrefTags.IsChecked == true,
-                    HideScopeBoxes           = ChkHideScopeBoxes.IsChecked == true,
-                    HideCropBoundaries       = ChkHideCropBounds.IsChecked == true,
+                    HideScopeBoxes = ChkHideScopeBoxes.IsChecked == true,
+                    HideCropBoundaries = ChkHideCropBounds.IsChecked == true,
                     ReplaceHalftoneWithThinLines = ChkReplaceHalftone.IsChecked == true,
-                    RasterQuality            = (CmbRasterQuality.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "High",
-                    ColorDepth               = (CmbColorDepth.SelectedItem as ComboBoxItem)?.Content?.ToString() == "Color" ? "Color"
+                    RasterQuality = (CmbRasterQuality.SelectedItem as ComboBoxItem)?.Content?.ToString() ?? "High",
+                    ColorDepth = (CmbColorDepth.SelectedItem as ComboBoxItem)?.Content?.ToString() == "Color" ? "Color"
                                              : (CmbColorDepth.SelectedItem as ComboBoxItem)?.Content?.ToString() == "Grayscale" ? "GrayScale"
                                              : "BlackAndWhite",
                 },
 
                 Dwg = new DwgSettings
                 {
-                    FilenameTemplate          = TxtDwgFilename.Text,
-                    LayerMapping              = GetComboTag(CmbLayerMapping) ?? "fromPrinterSettings",
-                    FileVersion               = GetComboTag(CmbDwgVersion) ?? "2018",
-                    TextTreatment             = GetComboTag(CmbTextTreatment) ?? "Exact",
-                    ExportColors              = GetComboTag(CmbExportColors) ?? "IndexColors",
-                    ExportSolids              = GetComboTag(CmbExportSolids) ?? "ACIS",
-                    Units                     = GetComboTag(CmbUnits) ?? "Millimeter",
-                    CoordinateSystem          = GetComboTag(CmbCoordinates) ?? "ProjectInternal",
+                    FilenameTemplate = TxtDwgFilename.Text,
+                    LayerMapping = GetComboTag(CmbLayerMapping) ?? "fromPrinterSettings",
+                    FileVersion = GetComboTag(CmbDwgVersion) ?? "2018",
+                    TextTreatment = GetComboTag(CmbTextTreatment) ?? "Exact",
+                    ExportColors = GetComboTag(CmbExportColors) ?? "IndexColors",
+                    ExportSolids = GetComboTag(CmbExportSolids) ?? "ACIS",
+                    Units = GetComboTag(CmbUnits) ?? "Millimeter",
+                    CoordinateSystem = GetComboTag(CmbCoordinates) ?? "ProjectInternal",
                     ViewsOnSheetsAsExternalRefs = ChkDwgExternalRefs.IsChecked == true,
-                    HideScopeBoxes            = ChkDwgHideScopeBoxes.IsChecked == true,
-                    HideRefPlanes             = ChkDwgHideRefPlanes.IsChecked == true,
-                    HideUnreferencedViewTags  = ChkDwgHideUnrefTags.IsChecked == true,
+                    HideScopeBoxes = ChkDwgHideScopeBoxes.IsChecked == true,
+                    HideRefPlanes = ChkDwgHideRefPlanes.IsChecked == true,
+                    HideUnreferencedViewTags = ChkDwgHideUnrefTags.IsChecked == true,
                 },
 
                 Ifc = new IfcSettings
@@ -196,7 +194,7 @@ namespace RevitSheetExporter.UI
             var dialog = new OpenFileDialog
             {
                 Filter = "JSON settings (*.json)|*.json|All files (*.*)|*.*",
-                Title  = "Load export settings",
+                Title = "Load export settings",
                 InitialDirectory = System.IO.Path.GetDirectoryName(SettingsService.DefaultSettingsPath)
             };
 
