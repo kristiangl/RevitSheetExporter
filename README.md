@@ -2,9 +2,22 @@
 
 Bulk export Revit sheets to PDF, DWG, and/or IFC with dynamic folder and filename templates.
 
+> **Personal project notice:** This is a personal project, shared as-is. It will likely not receive updates and does not come with support. Use at your own risk. Issues and pull requests are welcome, but responses are not guaranteed.
+
 ---
 
-## Requirements
+## Quick install (no build required)
+
+1. Go to the [Releases](../../releases) page and download `RevitSheetExporter_Installer.zip`.
+2. Extract the ZIP anywhere.
+3. Run `Install.bat` — it will detect which Revit versions you have installed (2026 and/or 2027) and copy the files to the correct addins folder automatically.
+4. Restart Revit. The **Sheet Exporter** tab will appear in the ribbon.
+
+To remove the add-in, run `Uninstall.bat` from the same extracted folder.
+
+---
+
+## Requirements (building from source)
 
 - Revit 2026 or 2027
 - [Visual Studio Community 2022](https://visualstudio.microsoft.com/vs/community/) (free) — with the **.NET desktop development** workload installed
@@ -38,9 +51,7 @@ Output goes to `bin\Debug\net8.0-windows\` (or the relevant config folder).
 
 ---
 
-## Install
-
-### Method 1 — Copy to Addins folder (recommended)
+## Install (from source build)
 
 Copy both files from the build output to your Revit addins folder:
 
@@ -58,16 +69,7 @@ Destination (choose one):
 
 For Revit 2027, replace `2026` with `2027`.
 
-### Method 2 — Add post-build event in Visual Studio
-
-Add this to the `.csproj` to auto-copy on every build:
-
-```xml
-<Target Name="InstallAddin" AfterTargets="Build">
-  <Copy SourceFiles="$(OutDir)RevitSheetExporter.dll;$(OutDir)RevitSheetExporter.addin"
-        DestinationFolder="$(APPDATA)\Autodesk\Revit\Addins\2026\" />
-</Target>
-```
+The project's post-build targets handle this automatically — a successful **Debug** or **Release** build copies the files to `%APPDATA%\Autodesk\Revit\Addins\2026\` without any extra steps.
 
 ---
 
@@ -150,3 +152,9 @@ C:\Projects\CornishHouse\Revit\Exports\260521_\IFC\367_Cornish House_IFC_260521.
 | "Could not load file or assembly" error | Make sure the `.dll` path in the `.addin` file matches where you put the `.dll` |
 | API compile errors on specific properties | The Revit API occasionally renames properties between versions — check the Revit API docs for your version |
 | Export fails silently | Check the folder template resolves to a valid path; make sure the `.rvt` file is saved |
+
+---
+
+## Support
+
+This is a personal project. It is provided as-is with no warranty and no guarantee of updates or bug fixes. Issues and pull requests are welcome, but responses are not guaranteed.
