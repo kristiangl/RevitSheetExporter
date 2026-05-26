@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PlatformTarget>x64</PlatformTarget>
+    <AssemblyName>RevitSheetExporter</AssemblyName>
+    <RootNamespace>RevitSheetExporter</RootNamespace>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Configurations>Debug;Release;Debug2027;Release2027</Configurations>
+    <!-- Revit 2027 API was compiled against .NET 10; suppress assembly version mismatch -->
+    <NoWarn>CS1705</NoWarn>
+  </PropertyGroup>
+
+  <!-- Revit 2026 references (default) -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
+    <Reference Include="RevitAPI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2026\RevitAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2026\RevitAPIUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <!-- Revit 2027 references -->
+  <ItemGroup Condition="'$(Configuration)' == 'Debug2027' Or '$(Configuration)' == 'Release2027'">
+    <Reference Include="RevitAPI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2027\RevitAPI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+    <Reference Include="RevitAPIUI">
+      <HintPath>C:\Program Files\Autodesk\Revit 2027\RevitAPIUI.dll</HintPath>
+      <Private>false</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\icon32.png"/>
+  </ItemGroup>
+
+  <!-- Copy .addin file to output folder after build -->
+  <Target Name="CopyAddinFile" AfterTargets="Build">
+    <Copy SourceFiles="RevitSheetExporter.addin" DestinationFolder="$(OutDir)" />
+  </Target>
+
+  <!-- Auto-install to Revit 2026 addins folder (current user) -->
+  <Target Name="InstallAddin2026" AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Debug' Or '$(Configuration)' == 'Release'">
+    <MakeDir Directories="$(APPDATA)\Autodesk\Revit\Addins\2026" />
+    <Copy SourceFiles="$(OutDir)RevitSheetExporter.dll;$(OutDir)RevitSheetExporter.addin"
+          DestinationFolder="$(APPDATA)\Autodesk\Revit\Addins\2026"
+          SkipUnchangedFiles="false" />
+    <Message Text="Installed to Revit 2026 addins folder." Importance="high" />
+  </Target>
+
+  <!-- Auto-install to Revit 2027 addins folder (current user) -->
+  <Target Name="InstallAddin2027" AfterTargets="Build"
+          Condition="'$(Configuration)' == 'Debug2027' Or '$(Configuration)' == 'Release2027'">
+    <MakeDir Directories="$(APPDATA)\Autodesk\Revit\Addins\2027" />
+    <Copy SourceFiles="$(OutDir)RevitSheetExporter.dll;$(OutDir)RevitSheetExporter.addin"
+          DestinationFolder="$(APPDATA)\Autodesk\Revit\Addins\2027"
+          SkipUnchangedFiles="false" />
+    <Message Text="Installed to Revit 2027 addins folder." Importance="high" />
+  </Target>
+
+</Project>

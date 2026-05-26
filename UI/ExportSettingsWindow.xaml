@@ -1,0 +1,421 @@
+<Window x:Class="RevitSheetExporter.UI.ExportSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Export Settings"
+        Width="680" Height="700"
+        MinWidth="580" MinHeight="580"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="CanResize">
+
+    <Window.Resources>
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="0,12,0,4"/>
+        </Style>
+        <Style x:Key="Label" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,8,0"/>
+            <Setter Property="Width" Value="130"/>
+        </Style>
+        <Style x:Key="PreviewText" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#888888"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Margin" Value="0,2,0,0"/>
+            <Setter Property="TextTrimming" Value="CharacterEllipsis"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="14,5"/>
+            <Setter Property="MinWidth" Value="80"/>
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="MinWidth" Value="140"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="4,3"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+    </Window.Resources>
+
+    <DockPanel Margin="14">
+
+        <!-- Bottom action bar -->
+        <Border DockPanel.Dock="Bottom" BorderThickness="0,1,0,0"
+                BorderBrush="#DDDDDD" Padding="0,10,0,0" Margin="0,10,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Content="Load Settings…"
+                        Margin="0,0,6,0" Click="LoadSettings"/>
+                <Button Grid.Column="1" Content="Save Settings"
+                        Click="SaveSettings"/>
+
+                <Button Grid.Column="3" Content="Export"
+                        IsDefault="True"
+                        Margin="0,0,8,0"
+                        Click="ExportClick"
+                        x:Name="BtnExport"/>
+                <Button Grid.Column="4" Content="Cancel"
+                        IsCancel="True" Click="CancelClick"/>
+            </Grid>
+        </Border>
+
+        <!-- Main scrollable content -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+
+                <!-- ── Format selection ── -->
+                <TextBlock Text="Export Formats" Style="{StaticResource SectionHeader}"/>
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                    <CheckBox x:Name="ChkPdf"  Content="PDF"  IsChecked="True"  Margin="0,0,20,0"
+                              Checked="FormatCheckChanged" Unchecked="FormatCheckChanged"/>
+                    <CheckBox x:Name="ChkDwg"  Content="DWG"  IsChecked="True"  Margin="0,0,20,0"
+                              Checked="FormatCheckChanged" Unchecked="FormatCheckChanged"/>
+                    <CheckBox x:Name="ChkIfc"  Content="IFC"  IsChecked="False"
+                              Checked="FormatCheckChanged" Unchecked="FormatCheckChanged"/>
+                </StackPanel>
+
+                <Separator Margin="0,4,0,4"/>
+
+                <!-- ── Output location ── -->
+                <TextBlock Text="Output Location" Style="{StaticResource SectionHeader}"/>
+
+                <Grid Margin="0,0,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Folder template:" Style="{StaticResource Label}"/>
+                    <TextBox x:Name="TxtFolderTemplate" Grid.Column="1"
+                             TextChanged="PreviewChanged"/>
+                    <Button Grid.Column="2" Content="Browse…" Margin="6,0,0,0"
+                            Click="BrowseFolder" Padding="8,5"/>
+                </Grid>
+                <TextBlock x:Name="TxtFolderPreview" Style="{StaticResource PreviewText}"
+                           Margin="130,0,0,4"/>
+
+                <Grid Margin="0,4,0,4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130"/>
+                        <ColumnDefinition Width="200"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="Date format:" Style="{StaticResource Label}"/>
+                    <ComboBox x:Name="CmbDateFormat" Grid.Column="1"
+                              SelectionChanged="PreviewChanged">
+                        <ComboBoxItem Tag="yyMMdd"  Content="yyMMdd  (e.g. 260521)"/>
+                        <ComboBoxItem Tag="ddMMyy"  Content="ddMMyy  (e.g. 210526)"/>
+                        <ComboBoxItem Tag="yyyyMMdd" Content="yyyyMMdd  (e.g. 20260521)"/>
+                        <ComboBoxItem Tag="dd-MM-yyyy" Content="dd-MM-yyyy  (e.g. 21-05-2026)"/>
+                        <ComboBoxItem Tag="yyyy-MM-dd" Content="yyyy-MM-dd  (e.g. 2026-05-21)"/>
+                    </ComboBox>
+                </Grid>
+
+                <TextBlock Foreground="#888888" FontSize="11" Margin="130,0,0,4"
+                           Text="Available tags: {RevitFileDir}  {ProjectNumber}  {ProjectName}  {Date}"/>
+
+                <Separator Margin="0,4,0,4"/>
+
+                <!-- ── Format tabs ── -->
+                <TabControl x:Name="TabFormats" Margin="0,4,0,0">
+
+                    <!-- ════ PDF tab ════ -->
+                    <TabItem Header="PDF Settings" x:Name="TabPdf">
+                        <StackPanel Margin="8,8,8,8">
+
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Filename template:" Style="{StaticResource Label}"/>
+                                <TextBox x:Name="TxtPdfFilename" Grid.Column="1"
+                                         TextChanged="PreviewChanged"/>
+                            </Grid>
+                            <TextBlock x:Name="TxtPdfFilenamePreview" Style="{StaticResource PreviewText}"
+                                       Margin="130,0,0,6"/>
+                            <TextBlock Foreground="#888888" FontSize="11" Margin="130,0,0,8"
+                                       Text="Tags: {ProjectNumber}  {ProjectName}  {Date}  {SheetNumber}  {SheetName}"/>
+
+                            <!-- File -->
+                            <TextBlock Text="File:" Style="{StaticResource SectionHeader}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <RadioButton x:Name="RdoPdfCombined"
+                                             Content="Combined into a single file"
+                                             IsChecked="True" Margin="0,0,20,0"/>
+                                <RadioButton x:Name="RdoPdfSeparate"
+                                             Content="Create separate files"/>
+                            </StackPanel>
+
+                            <!-- Paper -->
+                            <TextBlock Text="Paper:" Style="{StaticResource SectionHeader}"/>
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Paper size:" Style="{StaticResource Label}"/>
+                                <ComboBox x:Name="CmbPdfPaperSize" Grid.Column="1">
+                                    <ComboBoxItem Content="Default (sheet size)" Tag="Default" IsSelected="True"/>
+                                    <ComboBoxItem Content="A0" Tag="A0"/>
+                                    <ComboBoxItem Content="A1" Tag="A1"/>
+                                    <ComboBoxItem Content="A2" Tag="A2"/>
+                                    <ComboBoxItem Content="A3" Tag="A3"/>
+                                    <ComboBoxItem Content="A4" Tag="A4"/>
+                                </ComboBox>
+                                <TextBlock Text="Orientation:" Style="{StaticResource Label}"
+                                           Grid.Column="2" Margin="12,0,8,0"/>
+                                <StackPanel Orientation="Horizontal" Grid.Column="3" VerticalAlignment="Center">
+                                    <RadioButton x:Name="RdoPortrait"  Content="Portrait"   Margin="0,0,12,0"/>
+                                    <RadioButton x:Name="RdoLandscape" Content="Landscape"  IsChecked="True"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Zoom:" Style="{StaticResource Label}"/>
+                                <StackPanel Orientation="Horizontal" Grid.Column="1" VerticalAlignment="Center">
+                                    <RadioButton x:Name="RdoFitToPage" Content="Fit to page" Margin="0,0,12,0"/>
+                                    <RadioButton x:Name="RdoZoom" Content="Zoom" IsChecked="True" Margin="0,0,6,0"/>
+                                    <TextBox x:Name="TxtZoomPct" Width="45" Text="100"/>
+                                    <TextBlock Text="%" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Hidden line views -->
+                            <TextBlock Text="Hidden Line Views:" Style="{StaticResource SectionHeader}"/>
+                            <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                <RadioButton x:Name="RdoVector" Content="Vector Processing (faster)"
+                                             IsChecked="True" Margin="0,0,20,0"/>
+                                <RadioButton x:Name="RdoRaster" Content="Raster Processing"/>
+                            </StackPanel>
+
+                            <!-- Options -->
+                            <TextBlock Text="Options:" Style="{StaticResource SectionHeader}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <CheckBox x:Name="ChkViewLinksBlue"    Content="View links in blue"             Margin="0,2"/>
+                                    <CheckBox x:Name="ChkHideRefPlanes"    Content="Hide ref/work planes"           Margin="0,2" IsChecked="True"/>
+                                    <CheckBox x:Name="ChkHideUnrefTags"    Content="Hide unreferenced view tags"    Margin="0,2" IsChecked="True"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <CheckBox x:Name="ChkHideScopeBoxes"   Content="Hide scope boxes"              Margin="0,2" IsChecked="True"/>
+                                    <CheckBox x:Name="ChkHideCropBounds"   Content="Hide crop boundaries"          Margin="0,2" IsChecked="True"/>
+                                    <CheckBox x:Name="ChkReplaceHalftone"  Content="Replace halftone with thin lines" Margin="0,2"/>
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Appearance -->
+                            <TextBlock Text="Appearance:" Style="{StaticResource SectionHeader}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="180"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Raster quality:" Style="{StaticResource Label}"/>
+                                <ComboBox x:Name="CmbRasterQuality" Grid.Column="1">
+                                    <ComboBoxItem Content="Draft"/>
+                                    <ComboBoxItem Content="Low"/>
+                                    <ComboBoxItem Content="Medium"/>
+                                    <ComboBoxItem Content="High" IsSelected="True"/>
+                                    <ComboBoxItem Content="Presentation"/>
+                                </ComboBox>
+                                <TextBlock Text="Colours:" Style="{StaticResource Label}"
+                                           Grid.Column="2" Margin="12,0,8,0"/>
+                                <ComboBox x:Name="CmbColorDepth" Grid.Column="3">
+                                    <ComboBoxItem Content="Color" IsSelected="True"/>
+                                    <ComboBoxItem Content="Grayscale"/>
+                                    <ComboBoxItem Content="Black and White"/>
+                                </ComboBox>
+                            </Grid>
+
+                        </StackPanel>
+                    </TabItem>
+
+                    <!-- ════ DWG tab ════ -->
+                    <TabItem Header="DWG Settings" x:Name="TabDwg">
+                        <StackPanel Margin="8,8,8,8">
+
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Filename template:" Style="{StaticResource Label}"/>
+                                <TextBox x:Name="TxtDwgFilename" Grid.Column="1"
+                                         TextChanged="PreviewChanged"/>
+                            </Grid>
+                            <TextBlock x:Name="TxtDwgFilenamePreview" Style="{StaticResource PreviewText}"
+                                       Margin="130,0,0,6"/>
+                            <TextBlock Foreground="#888888" FontSize="11" Margin="130,0,0,8"
+                                       Text="Tags: {ProjectNumber}  {ProjectName}  {Date}  {SheetNumber}  {SheetName}"/>
+
+                            <!-- Layers / Format -->
+                            <TextBlock Text="Layers / Format:" Style="{StaticResource SectionHeader}"/>
+
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Layer mapping:" Style="{StaticResource Label}"/>
+                                <ComboBox x:Name="CmbLayerMapping" Grid.Column="1">
+                                    <ComboBoxItem Content="From printer settings" Tag="fromPrinterSettings" IsSelected="True"/>
+                                    <ComboBoxItem Content="AIA"    Tag="AIA"/>
+                                    <ComboBoxItem Content="BS1192" Tag="BS1192"/>
+                                </ComboBox>
+                                <TextBlock Text="File format:" Style="{StaticResource Label}"
+                                           Grid.Column="2" Margin="12,0,8,0"/>
+                                <ComboBox x:Name="CmbDwgVersion" Grid.Column="3">
+                                    <ComboBoxItem Content="AutoCAD 2018" Tag="2018" IsSelected="True"/>
+                                    <ComboBoxItem Content="AutoCAD 2013" Tag="2013"/>
+                                    <ComboBoxItem Content="AutoCAD 2010" Tag="2010"/>
+                                    <ComboBoxItem Content="AutoCAD 2007" Tag="2007"/>
+                                    <ComboBoxItem Content="AutoCAD 2004" Tag="2004"/>
+                                    <ComboBoxItem Content="AutoCAD 2000" Tag="2000"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <!-- Text / Colours / Solids -->
+                            <TextBlock Text="Text / Colours / Solids / Units:" Style="{StaticResource SectionHeader}"/>
+                            <Grid Margin="0,0,0,6">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="6"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="6"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Row 0: Text treatment / Export colours -->
+                                <TextBlock Text="Text treatment:" Style="{StaticResource Label}"
+                                           Grid.Row="0" Grid.Column="0"/>
+                                <ComboBox x:Name="CmbTextTreatment" Grid.Row="0" Grid.Column="1">
+                                    <ComboBoxItem Content="Exact (formatting may be lost)" Tag="Exact" IsSelected="True"/>
+                                    <ComboBoxItem Content="Text only" Tag="TextOnly"/>
+                                </ComboBox>
+                                <TextBlock Text="Export colours:" Style="{StaticResource Label}"
+                                           Grid.Row="0" Grid.Column="2" Margin="12,0,8,0"/>
+                                <ComboBox x:Name="CmbExportColors" Grid.Row="0" Grid.Column="3">
+                                    <ComboBoxItem Content="Index color (255)" Tag="IndexColors" IsSelected="True"/>
+                                    <ComboBoxItem Content="True color"        Tag="TrueColor"/>
+                                    <ComboBoxItem Content="True color per view" Tag="TrueColorPerView"/>
+                                </ComboBox>
+
+                                <!-- Row 2: Export solids / Units -->
+                                <TextBlock Text="Export solids:" Style="{StaticResource Label}"
+                                           Grid.Row="2" Grid.Column="0"/>
+                                <ComboBox x:Name="CmbExportSolids" Grid.Row="2" Grid.Column="1">
+                                    <ComboBoxItem Content="ACIS" Tag="ACIS" IsSelected="True"/>
+                                    <ComboBoxItem Content="Polymesh" Tag="PolymeshObject"/>
+                                </ComboBox>
+                                <TextBlock Text="Units:" Style="{StaticResource Label}"
+                                           Grid.Row="2" Grid.Column="2" Margin="12,0,8,0"/>
+                                <ComboBox x:Name="CmbUnits" Grid.Row="2" Grid.Column="3">
+                                    <ComboBoxItem Content="Millimeter" Tag="Millimeter" IsSelected="True"/>
+                                    <ComboBoxItem Content="Centimeter" Tag="Centimeter"/>
+                                    <ComboBoxItem Content="Meter"      Tag="Meter"/>
+                                    <ComboBoxItem Content="Inch"       Tag="Inch"/>
+                                    <ComboBoxItem Content="Foot"       Tag="Foot"/>
+                                </ComboBox>
+
+                                <!-- Row 4: Coordinate basis -->
+                                <TextBlock Text="Coordinate basis:" Style="{StaticResource Label}"
+                                           Grid.Row="4" Grid.Column="0"/>
+                                <ComboBox x:Name="CmbCoordinates" Grid.Row="4" Grid.Column="1">
+                                    <ComboBoxItem Content="Project Internal" Tag="ProjectInternal" IsSelected="True"/>
+                                    <ComboBoxItem Content="Shared / Site"    Tag="SharedSite"/>
+                                </ComboBox>
+                            </Grid>
+
+                            <!-- Options -->
+                            <TextBlock Text="Options:" Style="{StaticResource SectionHeader}"/>
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <CheckBox x:Name="ChkDwgExternalRefs"
+                                              Content="Xref views on sheets as external references"
+                                              IsChecked="False" Margin="0,2"/>
+                                    <CheckBox x:Name="ChkDwgHideScopeBoxes"
+                                              Content="Hide scope boxes"
+                                              IsChecked="True" Margin="0,2"/>
+                                </StackPanel>
+                                <StackPanel Grid.Column="1">
+                                    <CheckBox x:Name="ChkDwgHideRefPlanes"
+                                              Content="Hide reference planes"
+                                              IsChecked="False" Margin="0,2"/>
+                                    <CheckBox x:Name="ChkDwgHideUnrefTags"
+                                              Content="Hide unreferenced view tags"
+                                              IsChecked="False" Margin="0,2"/>
+                                </StackPanel>
+                            </Grid>
+
+                        </StackPanel>
+                    </TabItem>
+
+                    <!-- ════ IFC tab ════ -->
+                    <TabItem Header="IFC Settings" x:Name="TabIfc">
+                        <StackPanel Margin="8,8,8,8">
+
+                            <TextBlock TextWrapping="Wrap" Foreground="#555555" Margin="0,0,0,12">
+                                IFC is exported as a single whole-model file using Revit's current IFC export
+                                configuration. The settings below control only the output filename and location.
+                            </TextBlock>
+
+                            <Grid Margin="0,0,0,4">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="130"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Filename template:" Style="{StaticResource Label}"/>
+                                <TextBox x:Name="TxtIfcFilename" Grid.Column="1"
+                                         TextChanged="PreviewChanged"/>
+                            </Grid>
+                            <TextBlock x:Name="TxtIfcFilenamePreview" Style="{StaticResource PreviewText}"
+                                       Margin="130,0,0,6"/>
+                            <TextBlock Foreground="#888888" FontSize="11" Margin="130,0,0,8"
+                                       Text="Tags: {ProjectNumber}  {ProjectName}  {Date}"/>
+
+                            <TextBlock TextWrapping="Wrap" Foreground="#888888" FontSize="11" Margin="0,8,0,0">
+                                To change IFC schema, property sets, or level of detail, use Revit's built-in
+                                IFC export settings (File → Export → IFC) and save an export setup there.
+                                This tool will use whichever setup is currently active.
+                            </TextBlock>
+
+                        </StackPanel>
+                    </TabItem>
+
+                </TabControl>
+
+            </StackPanel>
+        </ScrollViewer>
+
+    </DockPanel>
+</Window>

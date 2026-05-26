@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>RevitSheetExporter</Name>
+    <Assembly>RevitSheetExporter.dll</Assembly>
+    <FullClassName>RevitSheetExporter.App</FullClassName>
+    <ClientId>A7F3E2D1-9B4C-4E8F-B6A5-3D7C9F0E1B2A</ClientId>
+    <VendorId>RevitSheetExporter</VendorId>
+    <VendorDescription>Revit Sheet Exporter</VendorDescription>
+  </AddIn>
+</RevitAddIns>
