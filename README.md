@@ -8,12 +8,21 @@ Bulk export Revit sheets to PDF, DWG, and/or IFC with dynamic folder and filenam
 
 ## Quick install (no build required)
 
-1. Go to the [Releases](../../releases) page and download `RevitSheetExporter_Installer.zip`.
+1. Go to the [Releases](../../releases) page and download the latest release Installer.zip.
 2. Extract the ZIP anywhere.
-3. Run `Install.bat` — it will detect which Revit versions you have installed (2026 and/or 2027) and copy the files to the correct addins folder automatically.
+3. Ensure Revit is closed. Run `Install.bat` — it will detect which Revit versions you have installed (2026 and/or 2027) and copy the files to the correct addins folder automatically.
 4. Restart Revit. The **Sheet Exporter** tab will appear in the ribbon.
 
 To remove the add-in, run `Uninstall.bat` from the same extracted folder.
+
+---
+
+## Quick Update - If you have a previous version installed (no build required)
+
+1. Go to the [Releases](../../releases) page and download the latest release Installer.zip.
+2. Extract the ZIP anywhere.
+3. Ensure Revit is closed. Run `Install.bat` — it will detect which Revit versions you have installed (2026 and/or 2027) and copy the files to the correct addins folder automatically, replacing previous versions.
+4. Start Revit.
 
 ---
 
