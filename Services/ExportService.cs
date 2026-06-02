@@ -75,9 +75,29 @@ namespace RevitSheetExporter.Services
                 options.Combine = false;
                 foreach (var sheet in sheets)
                 {
-                    // Per-sheet: set filename per iteration
-                    options.FileName = _tags.Resolve(_settings.Pdf.FilenameTemplate, sheet);
-                    _doc.Export(pdfFolder, new List<ElementId> { sheet.Id }, options);
+                    // Revit ignores FileName for separate-file exports and uses its own
+                    // "ViewType - ViewName" scheme instead. Work around this by exporting
+                    // each sheet to a temp subfolder, then renaming to our template.
+                    var tempDir = Path.Combine(pdfFolder, $"__tmp_{sheet.Id.Value}");
+                    Directory.CreateDirectory(tempDir);
+                    try
+                    {
+                        _doc.Export(tempDir, new List<ElementId> { sheet.Id }, options);
+
+                        var generated = Directory.GetFiles(tempDir, "*.pdf").FirstOrDefault();
+                        if (generated != null)
+                        {
+                            var desiredName = _tags.Resolve(_settings.Pdf.FilenameTemplate, sheet) + ".pdf";
+                            var destPath = Path.Combine(pdfFolder, desiredName);
+                            if (File.Exists(destPath)) File.Delete(destPath);
+                            File.Move(generated, destPath);
+                        }
+                    }
+                    finally
+                    {
+                        if (Directory.Exists(tempDir))
+                            Directory.Delete(tempDir, recursive: true);
+                    }
                 }
             }
         }
